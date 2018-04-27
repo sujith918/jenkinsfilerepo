@@ -41,7 +41,7 @@ pipeline{
 			}
 		    }
 		 }
-             } /*
+             } */
 		stage('Packaging') {
 		    	steps {
 				script {
@@ -81,7 +81,7 @@ pipeline{
 		    }
 		}
 	}
-	?*stage('ansibleTower')
+	/*stage('ansibleTower')
 		{
     			steps
 			{
