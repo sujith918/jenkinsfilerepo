@@ -66,11 +66,18 @@ pipeline
 				{
 				    if (isMaster)
 				    {
-					    sh "tar -cvf ${repositoryName}-1.0.${env.BUILD_NUMBER}.tar *.jar *.sh"
+					    // sh "tar -cvf ${repositoryName}-1.0.${env.BUILD_NUMBER}.tar *.jar *.sh"
 				    }
 				    else
 				    {
+				       if (branchName == "development")
+				    	{
+					    sh "tar -cvf ${repositoryName}-1.0.${env.BUILD_NUMBER}.tar *.jar *.sh"
+				    	}
+				    	else
+				    	{
 				         sh "tar -cvf ${repositoryName1}-1.0.${env.BUILD_NUMBER}.tar *.jar *.sh"
+				    	}
 				    }
 		        	}
 		    }
