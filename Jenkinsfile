@@ -1,6 +1,6 @@
 static final String GIT_URL = 'https://github.com/jithendram/ant_project.git';
-branchName = "preprod"
-isMaster = branchName == "dev"
+branchName = env.BRANCH_NAME
+isMaster = branchName == "master"
 repositoryName = "dev"
 repositoryName1 = "preprod"
 echo "branch name: ${branchName}"
