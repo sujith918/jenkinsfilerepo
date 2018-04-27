@@ -1,6 +1,6 @@
 static final String GIT_URL = 'https://github.com/jithendram/ant_project.git';
-branchName = env.BRANCH_NAME
-isMaster = branchName == "master"
+branchName = "preprod"
+isMaster = branchName == "dev"
 repositoryName = "dev"
 repositoryName1 = "preprod"
 echo "branch name: ${branchName}"
@@ -24,7 +24,7 @@ pipeline
 		    steps
 		    {
 		    script {
-					    checkout([$class: 'GitSCM',
+					checkout([$class: 'GitSCM',
        					branches: [[name: '*/*']],
         				doGenerateSubmoduleConfigurations: false,
         				extensions: [],
@@ -64,7 +64,14 @@ pipeline
 		    {
 				script
 				{
-					sh "tar -cvf ${repositoryName}-1.0.${env.BUILD_NUMBER}.tar *.jar *.sh"
+				    if (isMaster)
+				    {
+					    sh "tar -cvf ${repositoryName}-1.0.${env.BUILD_NUMBER}.tar *.jar *.sh"
+				    }
+				    else
+				    {
+				         sh "tar -cvf ${repositoryName1}-1.0.${env.BUILD_NUMBER}.tar *.jar *.sh"
+				    }
 		        }
 		    }
         }
@@ -76,15 +83,9 @@ pipeline
 			    {
 				    def server = Artifactory.server ('SujithJFrog')
 				    if (isMaster)
-				    {
-				        
-    				}
-				    else
-				    {
-					    if (isMaster == "dev")
-				    {
-				        def uploadSpec  =  """{
-			            "files": [{
+				        {
+				            def uploadSpec  =  """{
+			                "files": [{
                                     "pattern": "${repositoryName}-1.0.${env.BUILD_NUMBER}.tar",
 				                    "target": "${repositoryName}/"
 			                        }]
@@ -103,28 +104,46 @@ pipeline
 				        def buildInfo1 = server.upload(uploadSpec)
 				        server.publishBuildInfo(buildInfo1)
 			        }
-				    }
+				    
 		        }
 	    	}
 	    }
 	 /* stage('ansibleTower')
 		{
-    			steps
+    		steps
 			{
 				script
 				{
-					ansibleTower credential: '', 
-					extraVars: "tag: ${env.BUILD_NUMBER}", 
-					importTowerLogs: false, 
-					importWorkflowChildLogs: false, 
-					inventory: 'Dev_Environment', 
-					jobTags: '', 
-					jobTemplate: 'Dev_Env_Deployment', 
-					limit: '', 
-					removeColor: false, 
-					templateType: 'job', 
-					towerServer: 'SujithAnsibleTower', 
-					verbose: false
+				    if (isMaster)
+				    {
+				    	ansibleTower credential: '', 
+				    	extraVars: "tag: ${env.BUILD_NUMBER}", 
+				    	importTowerLogs: false, 
+				    	importWorkflowChildLogs: false, 
+				    	inventory: 'Dev_Environment', 
+				    	jobTags: '', 
+				    	jobTemplate: 'Dev_Env_Deployment', 
+				    	limit: '', 
+				    	removeColor: false, 
+				    	templateType: 'job', 
+				    	towerServer: 'SujithAnsibleTower', 
+				    	verbose: false
+				    }
+				    else
+				    {
+				       	ansibleTower credential: '', 
+				    	extraVars: "tag: ${env.BUILD_NUMBER}", 
+				    	importTowerLogs: false, 
+				    	importWorkflowChildLogs: false, 
+				    	inventory: 'Dev_Environment', 
+				    	jobTags: '', 
+				    	jobTemplate: 'PreProd_Env_Deployment', 
+				    	limit: '', 
+				    	removeColor: false, 
+				    	templateType: 'job', 
+				    	towerServer: 'SujithAnsibleTower', 
+				    	verbose: false  
+				    }
 				}
 			}
 		} */
