@@ -97,7 +97,7 @@ pipeline
 				    {
 				        def uploadSpec = """{
 				        "files": [{
-				                    "pattern": "${repositoryName}-1.0.${env.BUILD_NUMBER}.tar",
+				                    "pattern": "${repositoryName1}-1.0.${env.BUILD_NUMBER}.tar",
 				                     "target": "${repositoryName1}/"
 				                 }]
 			                }"""
