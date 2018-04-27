@@ -1,6 +1,7 @@
 static final String GIT_URL = 'https://github.com/jithendram/ant_project.git';
 // branchName = env.BRANCH_NAME
 //isMaster = branchName == "dev"
+//
 isMaster = "dev"
 repositoryName = "dev"
 repositoryName1 = "preprod"
