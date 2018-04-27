@@ -81,27 +81,27 @@ pipeline{
 		    }
 		}
 	}
-	/*stage('ansibleTower')
+	stage('ansibleTower')
 		{
     			steps
 			{
 				script
 				{
-					ansibleTower credential: '',
-					extraVars: '',
-					importTowerLogs: false,
-					importWorkflowChildLogs: false,
-					inventory: '',
-					jobTags: '',
-					jobTemplate: 'Demo Job Template',
-					limit: '',
-					removeColor: false,
-					templateType: 'job',
-					towerServer: 'SujithAnsibleTower',
+					ansibleTower credential: '', 
+					extraVars: "tag: ${env.BUILD_NUMBER}", 
+					importTowerLogs: false, 
+					importWorkflowChildLogs: false, 
+					inventory: 'Dev_Environment', 
+					jobTags: '', 
+					jobTemplate: 'Dev_Env_Deployment', 
+					limit: '', 
+					removeColor: false, 
+					templateType: 'job', 
+					towerServer: 'SujithAnsibleTower', 
 					verbose: false
 				}
 			}
-		}*/
+		}
 	}
 
 post
