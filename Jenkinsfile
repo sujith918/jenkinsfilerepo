@@ -4,7 +4,7 @@ isMaster = branchName == "master"
 repositoryName = "dev"
 repositoryName1 = "preprod"
 echo "branch name: ${branchName}"
-
+echo "isMaster: ${isMaster}"
 pipeline{
 	agent any
   	tools{
