@@ -11,16 +11,7 @@ node {
 
 
   //Source Code Checkout
-  stage (' checkout') {
-    checkout([
-			$class: 'GitSCM',
-			branches: scm.branches,
-			doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
-			extensions: scm.extensions + [[$class: 'CloneOption', noTags: false, reference: '', shallow: false]],
-			submoduleCfg: [],
-			userRemoteConfigs: scm.userRemoteConfigs]
-		)
-  }
+  
 
  
 // end of node
