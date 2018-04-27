@@ -10,7 +10,7 @@ pipeline{
 	environment {
 
 	JAVA_HOME="${tool 'jdk-1.8'}"
-	PATH="${JAVA_HOME}/bin:${PATH}"
+	PATH="${JAVA_HOME}/bin:${PATH}"   
         }
 	stages {
 	    stage('CloneCode') {
@@ -27,7 +27,7 @@ pipeline{
 	    }
 		stage('Build'){
 		    steps{
-			 script{
+			 script{				
 		          sh 'ant -f build.xml'
 			 }
 		    }
@@ -36,7 +36,7 @@ pipeline{
 		    	steps {
 				script {
 		        		def scannerHome = tool 'SonarQube';
-                                         withSonarQubeEnv('sonarQube') {
+                                         withSonarQubeEnv('sonarQube') {                                       
 					sh "${scannerHome}/bin/sonar-scanner"
 			}
 		    }
@@ -81,27 +81,27 @@ pipeline{
 		    }
 		}
 	}
-	?*stage('ansibleTower')
+	stage('ansibleTower')
 		{
     			steps
 			{
 				script
 				{
-					ansibleTower credential: '',
-					extraVars: '',
-					importTowerLogs: false,
-					importWorkflowChildLogs: false,
-					inventory: '',
-					jobTags: '',
-					jobTemplate: 'Demo Job Template',
-					limit: '',
-					removeColor: false,
-					templateType: 'job',
-					towerServer: 'SujithAnsibleTower',
+					ansibleTower credential: '', 
+					extraVars: '', 
+					importTowerLogs: false, 
+					importWorkflowChildLogs: false, 
+					inventory: '', 
+					jobTags: '', 
+					jobTemplate: 'Demo Job Template', 
+					limit: '', 
+					removeColor: false, 
+					templateType: 'job', 
+					towerServer: 'SujithAnsibleTower', 
 					verbose: false
-				}
+				}    
 			}
-		}*/
+		}
 	}
 
 post
@@ -145,3 +145,4 @@ post
         }
     }
 }
+
