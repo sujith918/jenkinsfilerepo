@@ -1,90 +1,109 @@
 static final String GIT_URL = 'https://github.com/jithendram/ant_project.git';
 branchName = env.BRANCH_NAME
-isMaster = branchName == "master"
+isMaster = branchName == "dev"
 repositoryName = "dev"
 repositoryName1 = "preprod"
 echo "branch name: ${branchName}"
-
-pipeline{
+echo "isMaster: ${isMaster}"
+pipeline
+{
 	agent any
-  	tools{
-	ant "ant-default"
+  	tools
+  	{
+	    ant "ant-default"
 	}
-	environment {
-
-	JAVA_HOME="${tool 'jdk-1.8'}"
-	PATH="${JAVA_HOME}/bin:${PATH}"
-        }
-	stages {
-	    stage('CloneCode') {
-		steps {
+	environment
+	{
+    	JAVA_HOME="${tool 'jdk-1.8'}"
+	    PATH="${JAVA_HOME}/bin:${PATH}"
+    }
+	stages
+	{
+	    stage('CloneCode')
+	    {
+		    steps
+		    {
 		    script {
-					checkout([$class: 'GitSCM',
+					    checkout([$class: 'GitSCM',
        					branches: [[name: '*/*']],
         				doGenerateSubmoduleConfigurations: false,
         				extensions: [],
         				submoduleCfg: [],
         				userRemoteConfigs: [[url: GIT_URL]]])
+		            }
 		    }
-		}
 	    }
-		stage('Build'){
-		    steps{
-			 script{
-		          sh 'ant -f build.xml'
-			 }
+		stage('Build')
+		{
+		    steps
+		    {
+			    script
+			    {
+		            sh 'ant -f build.xml'
+			    }
 		    }
 		}
-                        /*stage('SonarQube analysis') {
-		    	steps {
-				script {
-		        		def scannerHome = tool 'SonarQube';
-                                         withSonarQubeEnv('sonarQube') {
-					sh "${scannerHome}/bin/sonar-scanner"
-			}
-		    }
-		 }
-             } */
-		stage('Packaging') {
-		    	steps {
-				script {
-					sh "tar -cvf ${repositoryName}-1.0.${env.BUILD_NUMBER}.tar *.jar *.sh"
-		    }
-		 }
-             }
-         		stage('Upload artifacts') {
-		    steps {
-			script {
-				def server = Artifactory.server ('SujithJFrog')
-				if (isMaster){
-				def uploadSpec  =  """{
-			        "files": [
+		
+        /*stage('SonarQube analysis')
+        {
+		   	steps
+		   	{
+				script
 				{
-                                  "pattern": "${repositoryName}-1.0.${env.BUILD_NUMBER}.tar",
-				  "target": "${repositoryName}/{env.BUILD_NUMBER}/"
-				}
-			                ]
-		              }"""
-
+		        		def scannerHome = tool 'SonarQube';
+                        withSonarQubeEnv('sonarQube')
+                        {
+					        sh "${scannerHome}/bin/sonar-scanner"
+		            	}
+		        }
+		    }
+        } */
+		stage('Packaging')
+		{
+		    steps
+		    {
+				script
+				{
+					sh "tar -cvf ${repositoryName}-1.0.${env.BUILD_NUMBER}.tar *.jar *.sh"
+		        }
+		    }
+        }
+        stage('Upload artifacts')
+        {
+		    steps
+		    {
+			    script
+			    {
+				    def server = Artifactory.server ('SujithJFrog')
+				    if (isMaster == "master")
+				    {
+				        
+    				}
+				    else if (isMaster == "dev")
+				    {
+				        def uploadSpec  =  """{
+			            "files": [{
+                                    "pattern": "${repositoryName}-1.0.${env.BUILD_NUMBER}.tar",
+				                    "target": "${repositoryName}/"
+			                        }]
+		                    }"""
 		                def buildInfo1 = server.upload(uploadSpec)
 		                server.publishBuildInfo(buildInfo1)
-				}
-				else{
-				def uploadSpec = """{
-				"files": [
-				   {
-				   "pattern": "${repositoryName}-1.0.${env.BUILD_NUMBER}.tar",
-				   "target": "${repositoryName1}/"
-				   }
-				         ]
-			        }"""
-				def buildInfo1 = server.upload(uploadSpec)
-				server.publishBuildInfo(buildInfo1)
-			}
-		    }
-		}
-	}
-		
+    				}
+    				else
+				    {
+				        def uploadSpec = """{
+				        "files": [{
+				                    "pattern": "${repositoryName1}-1.0.${env.BUILD_NUMBER}.tar",
+				                     "target": "${repositoryName1}/"
+				                 }]
+			                }"""
+				        def buildInfo1 = server.upload(uploadSpec)
+				        server.publishBuildInfo(buildInfo1)
+			        }
+		        }
+	    	}
+	    }
 	 /* stage('ansibleTower')
 		{
     			steps
