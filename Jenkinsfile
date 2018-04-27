@@ -2,6 +2,7 @@ static final String GIT_URL = 'https://github.com/jithendram/ant_project.git';
 branchName = env.BRANCH_NAME
 isMaster = branchName == "master"
 repositoryName = "dev"
+echo "branch name: ${branchName}"
 pipeline{
 	agent any
   	tools{
