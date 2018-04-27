@@ -1,6 +1,6 @@
 static final String GIT_URL = 'https://github.com/jithendram/ant_project.git';
 branchName = env.BRANCH_NAME
-isMaster = branchName == "dev"
+isMaster = branchName == "master"
 repositoryName = "dev"
 repositoryName1 = "preprod"
 echo "branch name: ${branchName}"
@@ -75,11 +75,11 @@ pipeline
 			    script
 			    {
 				    def server = Artifactory.server ('SujithJFrog')
-				    if (isMaster == "master")
+				    if (isMaster)
 				    {
 				        
     				}
-				    else if (isMaster == "dev")
+				    elseif (isMaster == "dev")
 				    {
 				        def uploadSpec  =  """{
 			            "files": [{
