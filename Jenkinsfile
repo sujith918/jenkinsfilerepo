@@ -79,7 +79,9 @@ pipeline
 				    {
 				        
     				}
-				    elseif (isMaster == "dev")
+				    else
+				    {
+					    if (isMaster == "dev")
 				    {
 				        def uploadSpec  =  """{
 			            "files": [{
@@ -101,6 +103,7 @@ pipeline
 				        def buildInfo1 = server.upload(uploadSpec)
 				        server.publishBuildInfo(buildInfo1)
 			        }
+				    }
 		        }
 	    	}
 	    }
