@@ -2,6 +2,9 @@ static final String GIT_URL = 'https://github.com/jithendram/ant_project.git';
 branchName = env.BRANCH_NAME
 isMaster = branchName == "master"
 repositoryName = "dev"
+repositoryName1 = "preprod"
+echo "branch name: ${branchName}"
+
 pipeline{
 	agent any
   	tools{
@@ -10,14 +13,14 @@ pipeline{
 	environment {
 
 	JAVA_HOME="${tool 'jdk-1.8'}"
-	PATH="${JAVA_HOME}/bin:${PATH}"   
+	PATH="${JAVA_HOME}/bin:${PATH}"
         }
 	stages {
 	    stage('CloneCode') {
 		steps {
 		    script {
 					checkout([$class: 'GitSCM',
-       					branches: [[name: '*/*']],
+       					branches: [[name: '${branchName}']],
         				doGenerateSubmoduleConfigurations: false,
         				extensions: [],
         				submoduleCfg: [],
@@ -27,21 +30,21 @@ pipeline{
 	    }
 		stage('Build'){
 		    steps{
-			 script{				
+			 script{
 		          sh 'ant -f build.xml'
 			 }
 		    }
 		}
-                        stage('SonarQube analysis') {
+                        /*stage('SonarQube analysis') {
 		    	steps {
 				script {
 		        		def scannerHome = tool 'SonarQube';
-                                         withSonarQubeEnv('sonarQube') {                                       
+                                         withSonarQubeEnv('sonarQube') {
 					sh "${scannerHome}/bin/sonar-scanner"
 			}
 		    }
 		 }
-             }
+             } */
 		stage('Packaging') {
 		    	steps {
 				script {
@@ -71,7 +74,7 @@ pipeline{
 				"files": [
 				   {
 				   "pattern": "${repositoryName}-1.0.${env.BUILD_NUMBER}.tar",
-				   "target": "${repositoryName}/"
+				   "target": "${repositoryName1}/"
 				   }
 				         ]
 			        }"""
@@ -81,7 +84,7 @@ pipeline{
 		    }
 		}
 	}
-	stage('ansibleTower')
+	 /* stage('ansibleTower')
 		{
     			steps
 			{
@@ -99,9 +102,9 @@ pipeline{
 					templateType: 'job', 
 					towerServer: 'SujithAnsibleTower', 
 					verbose: false
-				}    
+				}
 			}
-		}
+		} */
 	}
 
 post
@@ -145,4 +148,3 @@ post
         }
     }
 }
-
