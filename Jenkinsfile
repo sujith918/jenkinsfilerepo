@@ -2,6 +2,7 @@ static final String GIT_URL = 'https://github.com/jithendram/ant_project.git';
 branchName = env.BRANCH_NAME
 isMaster = branchName == "master"
 repositoryName = "dev"
+repositoryName1 = "preprod"
 echo "branch name: ${branchName}"
 
 pipeline{
@@ -19,7 +20,7 @@ pipeline{
 		steps {
 		    script {
 					checkout([$class: 'GitSCM',
-       					branches: [[name: '*/*']],
+       					branches: [[name: '${branchName}']],
         				doGenerateSubmoduleConfigurations: false,
         				extensions: [],
         				submoduleCfg: [],
@@ -73,7 +74,7 @@ pipeline{
 				"files": [
 				   {
 				   "pattern": "${repositoryName}-1.0.${env.BUILD_NUMBER}.tar",
-				   "target": "${repositoryName}/"
+				   "target": "${repositoryName1}/"
 				   }
 				         ]
 			        }"""
@@ -83,7 +84,7 @@ pipeline{
 		    }
 		}
 	}
-	stage('ansibleTower')
+	 /* stage('ansibleTower')
 		{
     			steps
 			{
@@ -103,7 +104,7 @@ pipeline{
 					verbose: false
 				}
 			}
-		}
+		} */
 	}
 
 post
