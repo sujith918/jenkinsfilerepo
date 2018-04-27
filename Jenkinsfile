@@ -91,6 +91,11 @@ pipeline
 				    def server = Artifactory.server ('SujithJFrog')
 				    if (isMaster)
 				        {
+				         }
+    				else
+				    {
+				        if (branchName == "development")
+				        {
 				            def uploadSpec  =  """{
 			                "files": [{
                                     "pattern": "${repositoryName}-1.0.${env.BUILD_NUMBER}.tar",
@@ -110,6 +115,7 @@ pipeline
 			                }"""
 				        def buildInfo1 = server.upload(uploadSpec)
 				        server.publishBuildInfo(buildInfo1)
+			        }
 			        }
 				    
 		        }
