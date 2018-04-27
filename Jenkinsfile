@@ -88,12 +88,12 @@ pipeline{
 				script
 				{
 					ansibleTower credential: '', 
-					extraVars: '', 
+					extraVars: "tag: ${env.BUILD_NUMBER}", 
 					importTowerLogs: false, 
 					importWorkflowChildLogs: false, 
-					inventory: '', 
+					inventory: 'Dev_Environment', 
 					jobTags: '', 
-					jobTemplate: 'Demo Job Template', 
+					jobTemplate: 'Dev_Env_Deployment', 
 					limit: '', 
 					removeColor: false, 
 					templateType: 'job', 
