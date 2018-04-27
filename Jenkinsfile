@@ -64,10 +64,15 @@ pipeline
 		    {
 				script
 				{
-				    
+				    if (isMaster)
+				    {
+					    sh "tar -cvf ${repositoryName}-1.0.${env.BUILD_NUMBER}.tar *.jar *.sh"
+				    }
+				    else
+				    {
 				         sh "tar -cvf ${repositoryName1}-1.0.${env.BUILD_NUMBER}.tar *.jar *.sh"
-				    
-				}
+				    }
+		        	}
 		    }
         }
         stage('Upload artifacts')
