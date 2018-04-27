@@ -1,24 +1,14 @@
 waitingTime = 24
 
 branchName = env.BRANCH_NAME
-isMaster = branchName == "master" || branchName == "php53"
-phpVersion = branchName == "master" || branchName == "release" ? "7.1" : "5.3"
-packageVersion = ""
+isMaster = branchName == "master" 
 isPullRequest = branchName.startsWith("PR")
-
-echo "branch name: ${branchName}"
-echo "master: ${isMaster}"
-echo "php version: ${phpVersion}"
 
 node {
   properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '1', artifactNumToKeepStr: '1', daysToKeepStr: '', numToKeepStr: '']]]);
   //Define PHP home/path environment variables
 
-  env.php_home="${tool "php-${phpVersion}"}"
-  env.PATH="${ env.php_home}/bin:${env.PATH}"
-  //Define java home/path environment variables
-  env.composer="${tool 'composer-default'}"
-  env.PATH="${env.composer}/bin:${env.PATH}"
+
 
   //Source Code Checkout
   stage (' checkout') {
@@ -30,73 +20,8 @@ node {
 			submoduleCfg: [],
 			userRemoteConfigs: scm.userRemoteConfigs]
 		)
-        pkgurl = sh(script: 'git config remote.origin.url', returnStdout: true).trim()
-	echo "${pkgurl}"
-	packageName = sh (script: "echo ${pkgurl} | rev | cut -d '.' -f2 | cut -d '/' -f1 | rev | tr '[:upper:]' '[:lower:]' ", returnStdout: true).trim()
-	echo "${packageName}"
-	artifactoryLocation = isMaster ? "${packageName}/${env.BUILD_NUMBER}/" : "${packageName}/"
-	echo "artifactory location: ${artifactoryLocation}"
-        phpVersion = sh(script: 'cd ${WORKSPACE} && grep \\\\\\\"php\\\\\\\" composer.json |  cut -d= -f2 | sed s/\\",//', returnStdout: true).trim()
-        echo "${phpVersion}"
-        env.php_home="${tool "php-${phpVersion}"}"
-        env.PATH="${ env.php_home}/bin:${env.PATH}"
-        env.PATH="${env.composer}/bin:${env.PATH}"
-		if (phpVersion == "7.1") {
-		    if (isMaster) {
-		       packageVersion = sh(script: 'cd ${WORKSPACE} && /opt/git/bin/git tag | grep v2 | grep -v RC | sort -t "." -k1,1n -k2,2n -k3,3n | tail -n1', returnStdout: true).trim()
-		    } else {
-		       packageVersion = sh(script: 'cd ${WORKSPACE} && /opt/git/bin/git tag | grep v2 | sort -t "." -k1,1n -k2,2n -k3,3n | tail -n1', returnStdout: true).trim()
-		    }
-
-		} else {
-		    if (isMaster) {
-		        packageVersion = sh(script: 'cd ${WORKSPACE} && /opt/git/bin/git tag | grep v1 | grep -v RC | sort -t "." -k1,1n -k2,2n -k3,3n | tail -n1', returnStdout: true).trim()
-		    } else {
-		        packageVersion = sh(script: 'cd ${WORKSPACE} && /opt/git/bin/git tag | grep v1 | sort -t "." -k1,1n -k2,2n -k3,3n | tail -n1', returnStdout: true).trim()
-		    }
-		}
-
-		echo "${packageVersion}"
   }
 
-  //Build using Composer
-  stage ('Build using composer') {
-	  try {
-	sshagent(['jenkins-user-ssh']) {
-        sh "cp ${composer}/composer.phar ${composer}/composer"
-      	sh "export PATH='/opt/git/bin:$PATH'; ${php_home}/bin/php ${composer}/composer update --prefer-dist --ansi"
-    	}
-	  } catch(e){
-		  notifyBuild('FAILED')
-        throw e;
-    }
-
-  }
-
-  // Run Unit Test Cases with Code Coverage Analysis
-  stage ('Run Unit Test Cases with Code Coverage Analysis') {
-    try {
-	    if(phpVersion == "7.1"){
-  		  sh "${php_home}/bin/php -dxdebug.coverage_enable=1 ${WORKSPACE}/vendor/phpunit/phpunit/phpunit --coverage-clover ${WORKSPACE}/report.xml --configuration ${WORKSPACE}/phpunit.xml --log-junit ${WORKSPACE}/output.xml --teamcity"
-			} else{
-		    sh "${php_home}/bin/php -dxdebug.coverage_enable=1 ${WORKSPACE}/vendor/phpunit/phpunit/phpunit --coverage-clover ${WORKSPACE}/report.xml --configuration ${WORKSPACE}/phpunit.xml --log-junit ${WORKSPACE}/output.xml"
-		  }
-	  } catch(e){
-      notifyBuild('FAILED')
-        throw e;
-      }
-    }
-
-    stage('SonarQube analysis') {
-       def scannerHome = tool 'SonarQube';
-       withSonarQubeEnv('sonarQube') {
-         sh "${scannerHome}/bin/sonar-scanner"
-       }
-
-    }
-    if (!isPullRequest) {
-       deployDev()
-    }
  
 // end of node
 }
