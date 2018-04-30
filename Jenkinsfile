@@ -24,12 +24,19 @@ pipeline
 		    steps
 		    {
 		    script {
-					checkout([$class: 'GitSCM',
-       					branches: [[name: '*/*']],
-        				doGenerateSubmoduleConfigurations: false,
-        				extensions: [],
-        				submoduleCfg: [],
-        				userRemoteConfigs: [[url: GIT_URL]]])
+					//checkout([$class: 'GitSCM',
+       					//branches: [[name: '*/*']],
+        				//doGenerateSubmoduleConfigurations: false,
+        				//extensions: [],
+        				//submoduleCfg: [],
+        				//userRemoteConfigs: [[url: GIT_URL]]])
+			      		checkout([$class: 'GitSCM', 
+					branches: [[name: '*/master']], 
+					doGenerateSubmoduleConfigurations: false, 
+					extensions: [[$class: 'BuildChooserSetting', 
+					buildChooser: [$class: 'InverseBuildChooser']]],
+					submoduleCfg: [], 
+					userRemoteConfigs: [[url: GIT_URL]]])
 		            }
 		    }
 	    }
