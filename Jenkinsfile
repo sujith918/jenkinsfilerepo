@@ -129,16 +129,16 @@ pipeline
 		        }
 	    	}
 	    }
-	 /* stage('ansibleTower')
+	  stage('ansibleTower')
 		{
     		steps
 			{
 				script
 				{
-				    if (isMaster)
+				    if (branchName == "development")
 				    {
 				    	ansibleTower credential: '', 
-				    	extraVars: "tag: ${env.BUILD_NUMBER}", 
+				    	extraVars: "tag: ${env.BUILD_NUMBER} env: dev", 
 				    	importTowerLogs: false, 
 				    	importWorkflowChildLogs: false, 
 				    	inventory: 'Dev_Environment', 
@@ -167,7 +167,7 @@ pipeline
 				    }
 				}
 			}
-		} */
+		} 
 	}
 
 post
